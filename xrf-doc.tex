@@ -23,7 +23,7 @@ The \pkg{xrf} package provides cross-referencing helpers for constants, indexed 
 \begin{itemize}
 \item Compile at least twice so labels written to \texttt{.xrf} are available for references.
 \item Keep labels unique per document (for example, avoid reusing the same label for different constants).
-\item Commands with postfix \texttt{l} define/store a value; commands with postfix \texttt{r} reference a stored value.
+\item Commands with postfix \texttt{l} define a label; commands with postfix \texttt{r} reference a defined label.
 \item Sequence commands (such as \cs{const}, \cs{remain}, \cs{term}) advance their counters each time they are used.
 \item The \texttt{.xrf} file is generated automatically in the working directory and should not be edited manually.
 \end{itemize}
