@@ -6,17 +6,27 @@
 \usepackage{hyperref}
 
 \title{xrf package documentation}
-\author{Dirk - Andr\'e Deckert from Pionus GmbH and contributors}
+\author{Dirk - Andr\'e Deckert\\Pionus GmbH\\\texttt{deckert@pionus-solutions.de}}
 \date{Version 1.0 (2026-02-17)}
 
 \newcommand{\pkg}[1]{\textsf{#1}}
 \newcommand{\cs}[1]{\texttt{\textbackslash#1}}
+\hfuzz=2pt
 
 \begin{document}
 \maketitle
 
 \section{Overview}
 The \pkg{xrf} package provides cross-referencing helpers for constants, indexed remainders, and boxed term markers. Values are persisted in \texttt{\jobname.xrf} and resolved across LaTeX runs.
+
+\section{How to Use}
+\begin{itemize}
+\item Compile at least twice so labels written to \texttt{.xrf} are available for references.
+\item Keep labels unique per document (for example, avoid reusing the same label for different constants).
+\item Commands with postfix \texttt{l} define/store a value; commands with postfix \texttt{r} reference a stored value.
+\item Sequence commands (such as \cs{const}, \cs{remain}, \cs{term}) advance their counters each time they are used.
+\item The \texttt{.xrf} file is generated automatically in the working directory and should not be edited manually.
+\end{itemize}
 
 \section{Main Commands}
 This section documents the main commands of the package. Each example shows both source code and rendered output.
@@ -178,19 +188,23 @@ Code:
 \usepackage{xrf}
 \begin{document}
 Unknowns: x, y, z.
-Named constants: \namel{alpha}{\alpha}, \namel{beta}{\beta}, \namel{gamma}{\gamma}.
-RHS constants: \constl{c1}, \constl{c2}, \constl{c3}.
+Named constants:
+\namel{alpha}{\alpha}, \namel{beta}{\beta}, \namel{gamma}{\gamma}.
+RHS constants:
+\constl{c1}, \constl{c2}, \constl{c3}.
 
 \begin{align}
-\terml{t:eq1}\quad x + \namer{alpha}y + \namer{beta}z &= \constr{c1} \\
+\terml{t:eq1}\quad x + \namer{alpha}y
+  + \namer{beta}z &= \constr{c1} \\
 \terml{t:eq2}\quad y + \namer{gamma}z &= \constr{c2} \\
 \terml{t:eq3}\quad z &= \constr{c3}
 \end{align}
 
 From \termr{t:eq3}: z = \constr{c3}.
-From \termr{t:eq2}: y = \constr{c2} - \namer{gamma}\constr{c3}.
+From \termr{t:eq2}: y = \constr{c2}
+  - \namer{gamma}\constr{c3}.
 From \termr{t:eq1}: x = \constr{c1} - \namer{alpha}\constr{c2}
-                 + (\namer{alpha}\namer{gamma} - \namer{beta})\constr{c3}.
+  + (\namer{alpha}\namer{gamma} - \namer{beta})\constr{c3}.
 \end{document}
 \end{verbatim}
 
@@ -222,17 +236,37 @@ For users who need custom numbering families and renderers:
 \item \cs{xrfDeclareCounterSeries\{series\}} creates a numeric series counter.
 \item \cs{xrfDeclareSeries\{series\}\{formatter\}} creates a series with custom rendering.
 \item \cs{xrfSetSeries\{series\}\{n\}} sets the next index.
-\item \cs{xrfItem\{series\}}, \cs{xrfItemL\{series\}\{label\}}, \cs{xrfItemR\{series\}\{label\}} operate on formatted series.
-\item \cs{xrfVarItem\{series\}\{base\}}, \cs{xrfVarItemL\{series\}\{base\}\{label\}}, \cs{xrfVarItemR\{series\}\{base\}\{label\}} operate on base-index forms like $r_n$.
+\item \cs{xrfItem\{series\}} prints the next formatted item.
+\item \cs{xrfItemL\{series\}\{label\}} prints and labels a formatted item.
+\item \cs{xrfItemR\{series\}\{label\}} references a formatted item by label.
+\item \cs{xrfVarItem\{series\}\{base\}} prints a base-index item such as $r_n$.
+\item \cs{xrfVarItemL} prints and labels a base-index item (arguments: series, base, label).
+\item \cs{xrfVarItemR} references a base-index item by label (arguments: series, base, label).
 \end{itemize}
 
 Interplay summary:
 \begin{verbatim}
 \xrfDeclareSeries{axiom}{A_{#1}}
-\xrfItemL{axiom}{ax:first}   % prints A_1, stores ax:first -> 1
-\xrfItem{axiom}              % prints A_2
-\xrfItemR{axiom}{ax:first}   % prints A_1
+\xrfItemL{axiom}{ax:first}
+\xrfItem{axiom}
+\xrfItemR{axiom}{ax:first}
 \end{verbatim}
+
+Description:
+\begin{itemize}
+\item \cs{xrfDeclareSeries\{axiom\}\{A\_\{\#1\}\}} declares a series named \texttt{axiom} with formatter $A_n$.
+\item \cs{xrfItemL\{axiom\}\{ax:first\}} prints the next item and stores its index under label \texttt{ax:first}.
+\item \cs{xrfItem\{axiom\}} prints the next item in the same series.
+\item \cs{xrfItemR\{axiom\}\{ax:first\}} prints the item referenced by \texttt{ax:first}.
+\end{itemize}
+
+Rendered output:
+\begin{align*}
+\xrfDeclareSeries{axiomdoc}{A_{#1}}\\
+\xrfItemL{axiomdoc}{ax:first-doc}\\
+\xrfItem{axiomdoc}\\
+\xrfItemR{axiomdoc}{ax:first-doc}
+\end{align*}
 
 Compile at least twice to populate and consume \texttt{.xrf} label data.
 
