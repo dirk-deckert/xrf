@@ -1,0 +1,242 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{xrf}
+\usepackage{hyperref}
+
+\title{xrf package documentation}
+\author{Dirk - Andr\'e Deckert from Pionus GmbH and contributors}
+\date{Version 1.0 (2026-02-17)}
+
+\newcommand{\pkg}[1]{\textsf{#1}}
+\newcommand{\cs}[1]{\texttt{\textbackslash#1}}
+
+\begin{document}
+\maketitle
+
+\section{Overview}
+The \pkg{xrf} package provides cross-referencing helpers for constants, indexed remainders, and boxed term markers. Values are persisted in \texttt{\jobname.xrf} and resolved across LaTeX runs.
+
+\section{Main Commands}
+This section documents the main commands of the package. Each example shows both source code and rendered output.
+
+Naming convention: postfix \texttt{l} means \emph{label} (define and store), and postfix \texttt{r} means \emph{reference} (reuse a stored value).
+
+\subsection*{\cs{const}}
+Prints the next sequential constant (default format C with numeric index) and advances the constant counter.
+
+Code:
+\begin{verbatim}
+\begin{align*}
+\const
+\const
+\end{align*}
+\end{verbatim}
+
+Rendered output:
+\begin{align*}
+\const\\
+\const
+\end{align*}
+
+\subsection*{\cs{constl\{label\}}}
+Prints the next sequential constant, stores its index under \texttt{label}, and advances the counter.
+
+Code:
+\begin{verbatim}
+\begin{equation*}
+\constl{massdemo}
+\end{equation*}
+\end{verbatim}
+
+Rendered output:
+\begin{equation*}
+\constl{massdemo}
+\end{equation*}
+
+\subsection*{\cs{constr\{label\}}}
+Prints the constant associated with a previously stored label.
+
+Code:
+\begin{verbatim}
+\begin{align*}
+\constl{massref}
+\constr{massref}
+\end{align*}
+\end{verbatim}
+
+Rendered output:
+\begin{align*}
+\constl{massref}\\
+\constr{massref}
+\end{align*}
+
+\subsection*{\cs{remain\{base\}}}
+Prints the next indexed remainder using the provided base symbol and advances the remainder counter.
+
+Code:
+\begin{verbatim}
+\begin{align*}
+\remain{r}
+\remain{r}
+\end{align*}
+\end{verbatim}
+
+Rendered output:
+\begin{align*}
+\remain{r}\\
+\remain{r}
+\end{align*}
+
+\subsection*{\cs{remainl\{base\}\{label\}}}
+Prints the next indexed remainder with base symbol, stores its index under \texttt{label}, and advances the remainder counter.
+
+Code:
+\begin{verbatim}
+\begin{equation*}
+\remainl{r}{resdemo}
+\end{equation*}
+\end{verbatim}
+
+Rendered output:
+\begin{equation*}
+\remainl{r}{resdemo}
+\end{equation*}
+
+\subsection*{\cs{remainr\{base\}\{label\}}}
+Prints a remainder reference for \texttt{base} using the index stored under \texttt{label}.
+
+Code:
+\begin{verbatim}
+\begin{align*}
+\remainl{r}{resref}
+\remainr{r}{resref}
+\end{align*}
+\end{verbatim}
+
+Rendered output:
+\begin{align*}
+\remainl{r}{resref}\\
+\remainr{r}{resref}
+\end{align*}
+
+\subsection*{\cs{term}}
+Prints the next boxed term marker and advances the term counter.
+
+Code:
+\begin{verbatim}
+\begin{align*}
+\term
+\term
+\end{align*}
+\end{verbatim}
+
+Rendered output:
+\begin{align*}
+\term\\
+\term
+\end{align*}
+
+\subsection*{\cs{terml\{label\}}}
+Prints the next boxed term marker, stores its index under \texttt{label}, and advances the term counter.
+
+Code:
+\begin{verbatim}
+\begin{equation*}
+\terml{termdemo}
+\end{equation*}
+\end{verbatim}
+
+Rendered output:
+\begin{equation*}
+\terml{termdemo}
+\end{equation*}
+
+\subsection*{\cs{termr\{label\}}}
+Prints a boxed term reference using the index stored under \texttt{label}.
+
+Code:
+\begin{verbatim}
+\begin{align*}
+\terml{termref}
+\termr{termref}
+\end{align*}
+\end{verbatim}
+
+Rendered output:
+\begin{align*}
+\terml{termref}\\
+\termr{termref}
+\end{align*}
+
+\section{Worked Example}
+Code:
+\begin{verbatim}
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{xrf}
+\begin{document}
+Unknowns: x, y, z.
+Named constants: \namel{alpha}{\alpha}, \namel{beta}{\beta}, \namel{gamma}{\gamma}.
+RHS constants: \constl{c1}, \constl{c2}, \constl{c3}.
+
+\begin{align}
+\terml{t:eq1}\quad x + \namer{alpha}y + \namer{beta}z &= \constr{c1} \\
+\terml{t:eq2}\quad y + \namer{gamma}z &= \constr{c2} \\
+\terml{t:eq3}\quad z &= \constr{c3}
+\end{align}
+
+From \termr{t:eq3}: z = \constr{c3}.
+From \termr{t:eq2}: y = \constr{c2} - \namer{gamma}\constr{c3}.
+From \termr{t:eq1}: x = \constr{c1} - \namer{alpha}\constr{c2}
+                 + (\namer{alpha}\namer{gamma} - \namer{beta})\constr{c3}.
+\end{document}
+\end{verbatim}
+
+Rendered output:
+\begin{align*}
+\terml{t:eq1-doc}\quad x + \namel{alpha-doc}{\alpha}y + \namel{beta-doc}{\beta}z &= \constl{c1-doc} \\
+\terml{t:eq2-doc}\quad y + \namel{gamma-doc}{\gamma}z &= \constl{c2-doc} \\
+\terml{t:eq3-doc}\quad z &= \constl{c3-doc}
+\end{align*}
+
+\begin{align*}
+z &= \constr{c3-doc} \\
+y &= \constr{c2-doc} - \namer{gamma-doc}\constr{c3-doc} \\
+x &= \constr{c1-doc} - \namer{alpha-doc}\constr{c2-doc} + (\namer{alpha-doc}\namer{gamma-doc} - \namer{beta-doc})\constr{c3-doc}
+\end{align*}
+
+\section{Label Interface}
+These commands are exposed for direct label/value control:
+\begin{itemize}
+\item \cs{labelname\{label\}\{value\}} stores an arbitrary value.
+\item \cs{labelref\{label\}} retrieves the stored value.
+\item \cs{namel\{label\}\{symbol\}} stores and prints a named symbol.
+\item \cs{namer\{label\}} prints a named symbol.
+\end{itemize}
+
+\section{Customization API}
+For users who need custom numbering families and renderers:
+\begin{itemize}
+\item \cs{xrfDeclareCounterSeries\{series\}} creates a numeric series counter.
+\item \cs{xrfDeclareSeries\{series\}\{formatter\}} creates a series with custom rendering.
+\item \cs{xrfSetSeries\{series\}\{n\}} sets the next index.
+\item \cs{xrfItem\{series\}}, \cs{xrfItemL\{series\}\{label\}}, \cs{xrfItemR\{series\}\{label\}} operate on formatted series.
+\item \cs{xrfVarItem\{series\}\{base\}}, \cs{xrfVarItemL\{series\}\{base\}\{label\}}, \cs{xrfVarItemR\{series\}\{base\}\{label\}} operate on base-index forms like $r_n$.
+\end{itemize}
+
+Interplay summary:
+\begin{verbatim}
+\xrfDeclareSeries{axiom}{A_{#1}}
+\xrfItemL{axiom}{ax:first}   % prints A_1, stores ax:first -> 1
+\xrfItem{axiom}              % prints A_2
+\xrfItemR{axiom}{ax:first}   % prints A_1
+\end{verbatim}
+
+Compile at least twice to populate and consume \texttt{.xrf} label data.
+
+\section{License}
+Distributed under LPPL 1.3c or later.
+
+\end{document}

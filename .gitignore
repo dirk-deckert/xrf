@@ -1,0 +1,13 @@
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.xrf
+.DS_Store
+/build/
+*-ctan.zip

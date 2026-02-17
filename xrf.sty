@@ -1,0 +1,161 @@
+%% xrf.sty
+%% Copyright (C) 2026 Dirk - André Deckert from Pionus GmbH and contributors
+%%
+%% This file may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3c
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   https://www.latex-project.org/lppl.txt
+%%
+%% This work has the LPPL maintenance status `maintained'.
+%%
+%% The Current Maintainer of this work is Dirk - André Deckert from Pionus GmbH.
+%%
+%% This work consists of the file xrf.sty.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{xrf}[2026/02/17 v1.0 Cross-referencing names and generalized sequential markers]
+
+\makeatletter
+
+\newread\xrf@in
+\newwrite\xrf@out
+\newcommand*\xrf@filename{\jobname.xrf}
+
+\newcommand*\xrfnewlabel[2]{%
+  \expandafter\gdef\csname xrf@label@#1\endcsname{#2}%
+}
+
+\newcommand*\xrf@readlabels{%
+  \openin\xrf@in=\xrf@filename\relax
+  \ifeof\xrf@in
+    \PackageInfo{xrf}{No \xrf@filename\space file found on this run}%
+  \else
+    \closein\xrf@in
+    \InputIfFileExists{\xrf@filename}{}{}%
+  \fi
+  \closein\xrf@in
+}
+
+\newcommand*\xrf@openout{%
+  \immediate\openout\xrf@out=\xrf@filename\relax
+}
+
+\newcommand*\xrf@closout{%
+  \immediate\closeout\xrf@out
+}
+
+\AtBeginDocument{%
+  \xrf@readlabels
+  \xrf@openout
+}
+
+\AtEndDocument{%
+  \xrf@closout
+}
+
+\newcommand*\xrf@writelabel[2]{%
+  \xrfnewlabel{#1}{#2}%
+  \immediate\write\xrf@out{\unexpanded{\xrfnewlabel{#1}{#2}}}%
+}
+
+\newcommand*\xrf@getlabel[1]{%
+  \expandafter\ifx\csname xrf@label@#1\endcsname\relax
+    \PackageWarning{xrf}{Undefined xrf label `#1'}%
+    ??%
+  \else
+    \csname xrf@label@#1\endcsname
+  \fi
+}
+
+\newcommand*\xrf@ensurecounter[1]{%
+  \@ifundefined{c@xrf@ctr@#1}{%
+    \PackageError{xrf}{Undefined xrf series `#1'}{Declare it with \string\xrfDeclareSeries or \string\xrfDeclareCounterSeries.}%
+  }{}%
+}
+
+\newcommand*\xrf@ensureseries[1]{%
+  \xrf@ensurecounter{#1}%
+  \@ifundefined{xrf@fmt@#1}{%
+    \PackageError{xrf}{Series `#1' has no formatter}{Declare it with \string\xrfDeclareSeries.}%
+  }{}%
+}
+
+\newcommand*\xrf@seriesvalue[1]{\number\value{xrf@ctr@#1}}
+\newcommand*\xrf@seriesformat[2]{\csname xrf@fmt@#1\endcsname{#2}}
+
+%% Label helpers.
+\DeclareRobustCommand{\labelref}[1]{\xrf@getlabel{#1}}
+\DeclareRobustCommand{\labelname}[2]{\xrf@writelabel{#1}{#2}}
+
+%% Named symbols.
+\DeclareRobustCommand{\namel}[2]{\labelname{#1}{#2}\labelref{#1}}
+\DeclareRobustCommand{\namer}[1]{\labelref{#1}}
+
+%% Generalized series API.
+\DeclareRobustCommand{\xrfDeclareCounterSeries}[1]{%
+  \@ifundefined{c@xrf@ctr@#1}{\newcounter{xrf@ctr@#1}}{}%
+  \setcounter{xrf@ctr@#1}{1}%
+}
+
+\DeclareRobustCommand{\xrfDeclareSeries}[2]{%
+  \xrfDeclareCounterSeries{#1}%
+  \expandafter\gdef\csname xrf@fmt@#1\endcsname##1{#2}%
+}
+
+\DeclareRobustCommand{\xrfSetSeries}[2]{%
+  \xrf@ensurecounter{#1}%
+  \setcounter{xrf@ctr@#1}{#2}%
+}
+
+\DeclareRobustCommand{\xrfItem}[1]{%
+  \xrf@ensureseries{#1}%
+  {\xrf@seriesformat{#1}{\xrf@seriesvalue{#1}}\stepcounter{xrf@ctr@#1}}%
+}
+
+\DeclareRobustCommand{\xrfItemL}[2]{%
+  \xrf@ensureseries{#1}%
+  {\xrf@seriesformat{#1}{\xrf@seriesvalue{#1}}\labelname{#2}{\xrf@seriesvalue{#1}}\stepcounter{xrf@ctr@#1}}%
+}
+
+\DeclareRobustCommand{\xrfItemR}[2]{%
+  \xrf@ensureseries{#1}%
+  {\xrf@seriesformat{#1}{\labelref{#2}}}%
+}
+
+\DeclareRobustCommand{\xrfVarItem}[2]{%
+  \xrf@ensurecounter{#1}%
+  {#2_{\xrf@seriesvalue{#1}}\stepcounter{xrf@ctr@#1}}%
+}
+
+\DeclareRobustCommand{\xrfVarItemL}[3]{%
+  \xrf@ensurecounter{#1}%
+  {#2_{\xrf@seriesvalue{#1}}\labelname{#3}{\xrf@seriesvalue{#1}}\stepcounter{xrf@ctr@#1}}%
+}
+
+\DeclareRobustCommand{\xrfVarItemR}[3]{%
+  \xrf@ensurecounter{#1}%
+  {#2_{\labelref{#3}}}%
+}
+
+%% Built-in series wrappers.
+\newcommand*\xrfconstprefix{C}
+\xrfDeclareSeries{const}{\xrfconstprefix_{#1}}
+\xrfDeclareSeries{term}{\fbox{#1}}
+\xrfDeclareCounterSeries{remain}
+
+\DeclareRobustCommand{\const}{\xrfItem{const}}
+\DeclareRobustCommand{\constl}[1]{\xrfItemL{const}{#1}}
+\DeclareRobustCommand{\constr}[1]{\xrfItemR{const}{#1}}
+
+\DeclareRobustCommand{\remain}[1]{\xrfVarItem{remain}{#1}}
+\DeclareRobustCommand{\remainl}[2]{\xrfVarItemL{remain}{#1}{#2}}
+\DeclareRobustCommand{\remainr}[2]{\xrfVarItemR{remain}{#1}{#2}}
+
+\DeclareRobustCommand{\term}{\xrfItem{term}}
+\DeclareRobustCommand{\terml}[1]{\xrfItemL{term}{#1}}
+\DeclareRobustCommand{\termr}[1]{\xrfItemR{term}{#1}}
+
+\makeatother
+
+\endinput
