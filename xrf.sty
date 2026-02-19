@@ -58,15 +58,8 @@
   \begingroup
     \@tempswatrue
     \def\xrf@newval{#2}%
-    \expandafter\ifx\csname xrf@seen@#1\endcsname\relax
-    \else
-      \expandafter\ifx\csname xrf@seen@#1\endcsname\xrf@newval
-        \@tempswafalse
-      \else
-        \PackageWarning{xrf}{xrf label `#1' redefined with different value; last definition wins}%
-      \fi
-    \fi
-    \expandafter\global\expandafter\let\csname xrf@seen@#1\endcsname\xrf@newval
+    \xrf@checklabelredef{#1}%
+    \xrf@setlabelseen{#1}%
     \xrfnewlabel{#1}{#2}%
     \if@tempswa
       \immediate\write\xrf@out{\unexpanded{\xrfnewlabel{#1}{#2}}}%
@@ -78,15 +71,8 @@
   \begingroup
     \@tempswatrue
     \protected@edef\xrf@newval{#2}%
-    \expandafter\ifx\csname xrf@seen@#1\endcsname\relax
-    \else
-      \expandafter\ifx\csname xrf@seen@#1\endcsname\xrf@newval
-        \@tempswafalse
-      \else
-        \PackageWarning{xrf}{xrf label `#1' redefined with different value; last definition wins}%
-      \fi
-    \fi
-    \expandafter\global\expandafter\let\csname xrf@seen@#1\endcsname\xrf@newval
+    \xrf@checklabelredef{#1}%
+    \xrf@setlabelseen{#1}%
     \protected@edef\xrf@call{\noexpand\xrfnewlabel{#1}{#2}}%
     \xrf@call
     \protected@edef\xrf@writeline{\noexpand\noexpand\noexpand\xrfnewlabel{#1}{#2}}%
@@ -96,7 +82,20 @@
   \endgroup
 }
 
-\let\xrf@writelabelexpanded\xrf@writelabel
+\newcommand*\xrf@checklabelredef[1]{%
+  \expandafter\ifx\csname xrf@seen@#1\endcsname\relax
+  \else
+    \expandafter\ifx\csname xrf@seen@#1\endcsname\xrf@newval
+      \@tempswafalse
+    \else
+      \PackageWarning{xrf}{xrf label `#1' redefined with different value; last definition wins}%
+    \fi
+  \fi
+}
+
+\newcommand*\xrf@setlabelseen[1]{%
+  \expandafter\global\expandafter\let\csname xrf@seen@#1\endcsname\xrf@newval
+}
 
 \newcommand*\xrf@getlabel[1]{%
   \expandafter\ifx\csname xrf@label@#1\endcsname\relax
@@ -122,6 +121,24 @@
 
 \newcommand*\xrf@seriesvalue[1]{\number\value{xrf@ctr@#1}}
 \newcommand*\xrf@seriesformat[2]{\csname xrf@fmt@#1\endcsname{#2}}
+\newcommand*\xrf@seriesitemcore[2]{%
+  \xrf@ensureseries{#1}%
+  {%
+    \edef\xrf@current{\xrf@seriesvalue{#1}}%
+    \xrf@seriesformat{#1}{\xrf@current}%
+    #2%
+    \stepcounter{xrf@ctr@#1}%
+  }%
+}
+\newcommand*\xrf@varitemcore[3]{%
+  \xrf@ensurecounter{#1}%
+  {%
+    \edef\xrf@current{\xrf@seriesvalue{#1}}%
+    #2_{\xrf@current}%
+    #3%
+    \stepcounter{xrf@ctr@#1}%
+  }%
+}
 
 %% Label helpers.
 \DeclareRobustCommand{\labelref}[1]{\xrf@getlabel{#1}}
@@ -149,17 +166,11 @@
 }
 
 \DeclareRobustCommand{\xrfItem}[1]{%
-  \xrf@ensureseries{#1}%
-  {\xrf@seriesformat{#1}{\xrf@seriesvalue{#1}}\stepcounter{xrf@ctr@#1}}%
+  \xrf@seriesitemcore{#1}{}%
 }
 
 \DeclareRobustCommand{\xrfItemL}[2]{%
-  \xrf@ensureseries{#1}%
-  {%
-    \xrf@seriesformat{#1}{\xrf@seriesvalue{#1}}%
-    \xrf@writelabelexpanded{#2}{\xrf@seriesvalue{#1}}%
-    \stepcounter{xrf@ctr@#1}%
-  }%
+  \xrf@seriesitemcore{#1}{\xrf@writelabel{#2}{\xrf@current}}%
 }
 
 \DeclareRobustCommand{\xrfItemR}[2]{%
@@ -168,17 +179,11 @@
 }
 
 \DeclareRobustCommand{\xrfVarItem}[2]{%
-  \xrf@ensurecounter{#1}%
-  {#2_{\xrf@seriesvalue{#1}}\stepcounter{xrf@ctr@#1}}%
+  \xrf@varitemcore{#1}{#2}{}%
 }
 
 \DeclareRobustCommand{\xrfVarItemL}[3]{%
-  \xrf@ensurecounter{#1}%
-  {%
-    #2_{\xrf@seriesvalue{#1}}%
-    \xrf@writelabelexpanded{#3}{\xrf@seriesvalue{#1}}%
-    \stepcounter{xrf@ctr@#1}%
-  }%
+  \xrf@varitemcore{#1}{#2}{\xrf@writelabel{#3}{\xrf@current}}%
 }
 
 \DeclareRobustCommand{\xrfVarItemR}[3]{%
