@@ -7,7 +7,7 @@
 
 \title{xrf package documentation}
 \author{Pionus GmbH\\\texttt{deckert@pionus-solutions.de}}
-\date{Version 1.0 (2026-02-17)}
+\date{Version 1.0.1 (2026-02-19)}
 
 \newcommand{\pkg}[1]{\textsf{#1}}
 \newcommand{\cs}[1]{\texttt{\textbackslash#1}}
@@ -25,6 +25,7 @@ The \pkg{xrf} package provides cross-referencing helpers for constants, indexed 
 \item Keep labels unique per document (for example, avoid reusing the same label for different constants).
 \item Commands with postfix \texttt{l} define a label; commands with postfix \texttt{r} reference a defined label.
 \item Sequence commands (such as \cs{const}, \cs{remain}, \cs{term}) advance their counters each time they are used.
+\item The package warns if a label is redefined with a different value in the same run.
 \item The \texttt{.xrf} file is generated automatically in the working directory and should not be edited manually.
 \end{itemize}
 
@@ -224,7 +225,8 @@ x &= \constr{c1-doc} - \namer{alpha-doc}\constr{c2-doc} + (\namer{alpha-doc}\nam
 \section{Label Interface}
 These commands are exposed for direct label/value control:
 \begin{itemize}
-\item \cs{labelname\{label\}\{value\}} stores an arbitrary value.
+\item \cs{labelname\{label\}\{value\}} stores an arbitrary value (expanded at definition time).
+\item \cs{labelnamenx\{label\}\{value\}} stores an arbitrary value without expansion.
 \item \cs{labelref\{label\}} retrieves the stored value.
 \item \cs{namel\{label\}\{symbol\}} stores and prints a named symbol.
 \item \cs{namer\{label\}} prints a named symbol.

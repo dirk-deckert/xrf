@@ -14,7 +14,7 @@
 %% This work consists of the file xrf.sty.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xrf}[2026/02/17 v1.0 Cross-referencing names and generalized sequential markers]
+\ProvidesPackage{xrf}[2026/02/19 v1.0.1 Cross-referencing names and generalized sequential markers]
 
 \makeatletter
 
@@ -54,10 +54,49 @@
   \xrf@closout
 }
 
-\newcommand*\xrf@writelabel[2]{%
-  \xrfnewlabel{#1}{#2}%
-  \immediate\write\xrf@out{\unexpanded{\xrfnewlabel{#1}{#2}}}%
+\newcommand*\xrf@writelabelnx[2]{%
+  \begingroup
+    \@tempswatrue
+    \def\xrf@newval{#2}%
+    \expandafter\ifx\csname xrf@seen@#1\endcsname\relax
+    \else
+      \expandafter\ifx\csname xrf@seen@#1\endcsname\xrf@newval
+        \@tempswafalse
+      \else
+        \PackageWarning{xrf}{xrf label `#1' redefined with different value; last definition wins}%
+      \fi
+    \fi
+    \expandafter\global\expandafter\let\csname xrf@seen@#1\endcsname\xrf@newval
+    \xrfnewlabel{#1}{#2}%
+    \if@tempswa
+      \immediate\write\xrf@out{\unexpanded{\xrfnewlabel{#1}{#2}}}%
+    \fi
+  \endgroup
 }
+
+\newcommand*\xrf@writelabel[2]{%
+  \begingroup
+    \@tempswatrue
+    \protected@edef\xrf@newval{#2}%
+    \expandafter\ifx\csname xrf@seen@#1\endcsname\relax
+    \else
+      \expandafter\ifx\csname xrf@seen@#1\endcsname\xrf@newval
+        \@tempswafalse
+      \else
+        \PackageWarning{xrf}{xrf label `#1' redefined with different value; last definition wins}%
+      \fi
+    \fi
+    \expandafter\global\expandafter\let\csname xrf@seen@#1\endcsname\xrf@newval
+    \protected@edef\xrf@call{\noexpand\xrfnewlabel{#1}{#2}}%
+    \xrf@call
+    \protected@edef\xrf@writeline{\noexpand\noexpand\noexpand\xrfnewlabel{#1}{#2}}%
+    \if@tempswa
+      \immediate\write\xrf@out{\xrf@writeline}%
+    \fi
+  \endgroup
+}
+
+\let\xrf@writelabelexpanded\xrf@writelabel
 
 \newcommand*\xrf@getlabel[1]{%
   \expandafter\ifx\csname xrf@label@#1\endcsname\relax
@@ -87,6 +126,7 @@
 %% Label helpers.
 \DeclareRobustCommand{\labelref}[1]{\xrf@getlabel{#1}}
 \DeclareRobustCommand{\labelname}[2]{\xrf@writelabel{#1}{#2}}
+\DeclareRobustCommand{\labelnamenx}[2]{\xrf@writelabelnx{#1}{#2}}
 
 %% Named symbols.
 \DeclareRobustCommand{\namel}[2]{\labelname{#1}{#2}\labelref{#1}}
@@ -115,7 +155,11 @@
 
 \DeclareRobustCommand{\xrfItemL}[2]{%
   \xrf@ensureseries{#1}%
-  {\xrf@seriesformat{#1}{\xrf@seriesvalue{#1}}\labelname{#2}{\xrf@seriesvalue{#1}}\stepcounter{xrf@ctr@#1}}%
+  {%
+    \xrf@seriesformat{#1}{\xrf@seriesvalue{#1}}%
+    \xrf@writelabelexpanded{#2}{\xrf@seriesvalue{#1}}%
+    \stepcounter{xrf@ctr@#1}%
+  }%
 }
 
 \DeclareRobustCommand{\xrfItemR}[2]{%
@@ -130,7 +174,11 @@
 
 \DeclareRobustCommand{\xrfVarItemL}[3]{%
   \xrf@ensurecounter{#1}%
-  {#2_{\xrf@seriesvalue{#1}}\labelname{#3}{\xrf@seriesvalue{#1}}\stepcounter{xrf@ctr@#1}}%
+  {%
+    #2_{\xrf@seriesvalue{#1}}%
+    \xrf@writelabelexpanded{#3}{\xrf@seriesvalue{#1}}%
+    \stepcounter{xrf@ctr@#1}%
+  }%
 }
 
 \DeclareRobustCommand{\xrfVarItemR}[3]{%

@@ -1,0 +1,9 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+Package xrf Warning: xrf label `dup' redefined with different value; last definition wins on input line ....
+XRF-DUP dup=B
+XRF-DUP dupsame=A
+Package xrf Warning: xrf label `dupterm' redefined with different value; last definition wins on input line ....
+XRF-DUP dupterm=2
+[1
+] (xrf-duplicates.aux)

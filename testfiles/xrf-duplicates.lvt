@@ -1,0 +1,28 @@
+% Warnings for multiple label definitions.
+\input regression-test.tex
+\START
+\OMIT
+\documentclass{article}
+\usepackage{xrf}
+\makeatletter
+\newcommand*\XRFtypeout[2]{\typeout{#1=\xrf@getlabel{#2}}}
+\makeatother
+\begin{document}
+\TIMO
+
+% Redefining a label with a different value should warn and the last value wins.
+\labelname{dup}{A}
+\labelname{dup}{B}
+\XRFtypeout{XRF-DUP dup}{dup}
+
+% Redefining a label with the same value should not warn.
+\labelname{dupsame}{A}
+\labelname{dupsame}{A}
+\XRFtypeout{XRF-DUP dupsame}{dupsame}
+
+% Same label via series labeling: different numeric value should warn.
+\terml{dupterm}\terml{dupterm}
+\XRFtypeout{XRF-DUP dupterm}{dupterm}
+
+\end{document}
+\END

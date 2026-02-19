@@ -23,6 +23,14 @@ This repository is structured to be CTAN-ready:
 
 Data is persisted in `jobname.xrf` between LaTeX runs.
 
+## Label Semantics
+
+- `\\constl`, `\\terml`, and `\\remainl` store a snapshot of the current index.
+- `\\constr`, `\\termr`, and `\\remainr` resolve to that stored snapshot value.
+- `\\labelname{label}{value}` stores an expanded snapshot of `value`.
+- `\\labelnamenx{label}{value}` stores `value` without expansion.
+- The package warns if the same label is redefined with a different value in one run.
+
 ## Quick example
 
 ```tex
@@ -51,4 +59,38 @@ l3build check
 l3build ctan
 ```
 
-This produces a CTAN upload archive under `build/distrib/`.
+This produces a CTAN upload archive at `build/distrib/ctan/xrf-ctan.zip`.
+
+## CI
+
+GitHub Actions runs:
+
+- `l3build check` (regression tests on `pdftex`, `luatex`, `xetex`)
+- `l3build ctan` (CTAN artifact build)
+
+## Regression Tests
+
+Regression test files are in `testfiles/`:
+
+- `xrf-snapshots.lvt` validates stable snapshot/reference behavior.
+- `xrf-duplicates.lvt` validates duplicate-label warning behavior.
+
+If expected output intentionally changes:
+
+```sh
+l3build save -e pdftex xrf-snapshots xrf-duplicates
+```
+
+Then rerun:
+
+```sh
+l3build check
+```
+
+## Release Checklist
+
+1. Run `l3build check`.
+2. Build docs: `latexmk -pdf -interaction=nonstopmode -halt-on-error xrf-doc.tex`.
+3. Build CTAN archive: `l3build ctan`.
+4. Verify artifact exists: `build/distrib/ctan/xrf-ctan.zip`.
+5. Keep version fields aligned in `xrf.sty`, `build.lua`, `xrf-doc.tex`, and `CHANGELOG.md`.

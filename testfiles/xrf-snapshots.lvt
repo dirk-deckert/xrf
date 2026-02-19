@@ -1,0 +1,36 @@
+% Basic snapshot semantics for xrf labels.
+\input regression-test.tex
+\START
+\OMIT
+\documentclass{article}
+\usepackage{xrf}
+\makeatletter
+\newcommand*\XRFtypeout[2]{\typeout{#1=\xrf@getlabel{#2}}}
+\makeatother
+\begin{document}
+\TIMO
+
+% Constants: labels must keep their original numeric value even after the
+% counter advances.
+$\constl{c1}\constl{c2}\constl{c3}\const$
+\XRFtypeout{XRF-SNAP c1}{c1}
+\XRFtypeout{XRF-SNAP c2}{c2}
+\XRFtypeout{XRF-SNAP c3}{c3}
+
+% Terms: same idea, but text-mode friendly series.
+\terml{t1}\terml{t2}\term
+\XRFtypeout{XRF-SNAP t1}{t1}
+\XRFtypeout{XRF-SNAP t2}{t2}
+
+% Remainders: variable-base series uses subscripts (math mode).
+$\remainl{r}{r1}\remainl{r}{r2}\remain{r}$
+\XRFtypeout{XRF-SNAP r1}{r1}
+\XRFtypeout{XRF-SNAP r2}{r2}
+
+% Generic label API: snapshot expanded values (e.g. \thepage) at definition time.
+\labelname{p1}{\thepage}
+\newpage
+\XRFtypeout{XRF-SNAP p1}{p1}
+
+\end{document}
+\END

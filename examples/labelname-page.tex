@@ -1,0 +1,16 @@
+\documentclass{article}
+\usepackage{xrf}
+
+\begin{document}
+
+Page snapshot demo.
+
+\labelname{p1}{\thepage}
+
+Page 1 says: \labelref{p1}.
+
+\newpage
+
+Page 2 should still say: \labelref{p1}.
+
+\end{document}
