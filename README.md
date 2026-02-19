@@ -2,7 +2,7 @@
 
 `xrf` is a LaTeX package for cross-referencing named symbols and generalized sequential markers.
 
-Author: Dirk - André Deckert from Pionus GmbH.
+Author: Pionus GmbH.
 
 ## Status
 
