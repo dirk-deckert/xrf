@@ -5,5 +5,13 @@ XRF-DUP dup=B
 XRF-DUP dupsame=A
 Package xrf Warning: xrf label `dupterm' redefined with different value; last definition wins on input line ....
 XRF-DUP dupterm=2
+(xrf-duplicates.xrf
+XRF-FILE dup=A
+XRF-FILE dup=B
+XRF-FILE dupsame=A
+XRF-FILE dupterm=1
+XRF-FILE dupterm=2
+)
+XRF-FILE count=5
 [1
 ] (xrf-duplicates.aux)

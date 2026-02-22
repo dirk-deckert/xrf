@@ -18,7 +18,6 @@
 
 \makeatletter
 
-\newread\xrf@in
 \newwrite\xrf@out
 \newcommand*\xrf@filename{\jobname.xrf}
 
@@ -27,21 +26,16 @@
 }
 
 \newcommand*\xrf@readlabels{%
-  \openin\xrf@in=\xrf@filename\relax
-  \ifeof\xrf@in
+  \InputIfFileExists{\xrf@filename}{}{%
     \PackageInfo{xrf}{No \xrf@filename\space file found on this run}%
-  \else
-    \closein\xrf@in
-    \InputIfFileExists{\xrf@filename}{}{}%
-  \fi
-  \closein\xrf@in
+  }%
 }
 
 \newcommand*\xrf@openout{%
   \immediate\openout\xrf@out=\xrf@filename\relax
 }
 
-\newcommand*\xrf@closout{%
+\newcommand*\xrf@closeout{%
   \immediate\closeout\xrf@out
 }
 
@@ -51,7 +45,7 @@
 }
 
 \AtEndDocument{%
-  \xrf@closout
+  \xrf@closeout
 }
 
 \newcommand*\xrf@writelabelnx[2]{%

@@ -6,6 +6,19 @@
 \usepackage{xrf}
 \makeatletter
 \newcommand*\XRFtypeout[2]{\typeout{#1=\xrf@getlabel{#2}}}
+\newcount\XRFfilecount
+\newcommand*\XRFscanfile{%
+  \immediate\closeout\xrf@out
+  \begingroup
+    \XRFfilecount=0\relax
+    \def\xrfnewlabel##1##2{%
+      \global\advance\XRFfilecount by 1\relax
+      \typeout{XRF-FILE ##1=##2}%
+    }%
+    \InputIfFileExists{\jobname.xrf}{}{}%
+  \endgroup
+  \typeout{XRF-FILE count=\the\XRFfilecount}%
+}
 \makeatother
 \begin{document}
 \TIMO
@@ -23,6 +36,9 @@
 % Same label via series labeling: different numeric value should warn.
 \terml{dupterm}\terml{dupterm}
 \XRFtypeout{XRF-DUP dupterm}{dupterm}
+
+% The sidecar file should not contain duplicate same-value writes.
+\XRFscanfile
 
 \end{document}
 \END

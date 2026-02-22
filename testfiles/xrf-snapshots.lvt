@@ -32,5 +32,13 @@ $\remainl{r}{r1}\remainl{r}{r2}\remain{r}$
 \newpage
 \XRFtypeout{XRF-SNAP p1}{p1}
 
+% Non-expanded label API should preserve raw token semantics.
+\def\XRFtoken{A}
+\labelname{exp}{\XRFtoken}
+\labelnamenx{raw}{\XRFtoken}
+\def\XRFtoken{B}
+\XRFtypeout{XRF-SNAP exp}{exp}
+\XRFtypeout{XRF-SNAP raw}{raw}
+
 \end{document}
 \END
