@@ -7,27 +7,28 @@
 \section*{Linear System Example}
 Unknowns: $x$, $y$, $z$. Named constants: $\namel{alpha}{\alpha}$, $\namel{beta}{\beta}$, $\namel{gamma}{\gamma}$.
 Right-hand side constants: $\constl{c1}$, $\constl{c2}$, $\constl{c3}$.
+Remainder terms: $\remainl{r}{rem:eq1}$, $\remainl{r}{rem:eq2}$, $\remainl{r}{rem:eq3}$.
 
 \begin{align}
-\terml{t:eq1} = x + \namer{alpha}y + \namer{beta}z &= \constr{c1} \\
-\terml{t:eq2} = y + \namer{gamma}z &= \constr{c2} \\
-\terml{t:eq3} = z &= \constr{c3}
+\terml{t:eq1}\quad x + \namer{alpha}y + \namer{beta}z &= \constr{c1} + \remainr{r}{rem:eq1} \\
+\terml{t:eq2}\quad y + \namer{gamma}z &= \constr{c2} + \remainr{r}{rem:eq2} \\
+\terml{t:eq3}\quad z &= \constr{c3} + \remainr{r}{rem:eq3}
 \end{align}
 
 From \termr{t:eq3} we get $z$ immediately. Using \termr{t:eq2} and substituting \termr{t:eq3}:
 \begin{align}
-y &= \constr{c2} - \namer{gamma}\,\constr{c3}.
+y &= \constr{c2} + \remainr{r}{rem:eq2} - \namer{gamma}\,(\constr{c3} + \remainr{r}{rem:eq3}).
 \end{align}
 Using \termr{t:eq1} and substituting the expressions from \termr{t:eq2} and \termr{t:eq3}:
 \begin{align}
-x &= \constr{c1} - \namer{alpha}\,\constr{c2} + (\namer{alpha}\namer{gamma} - \namer{beta})\constr{c3}.
+x &= \constr{c1} + \remainr{r}{rem:eq1} - \namer{alpha}\,(\constr{c2} + \remainr{r}{rem:eq2}) + (\namer{alpha}\namer{gamma} - \namer{beta})(\constr{c3} + \remainr{r}{rem:eq3}).
 \end{align}
 
 Therefore, the solved system is:
 \begin{align}
-z &= \constr{c3}, \\
-y &= \constr{c2} - \namer{gamma}\,\constr{c3}, \\
-x &= \constr{c1} - \namer{alpha}\,\constr{c2} + (\namer{alpha}\namer{gamma} - \namer{beta})\constr{c3}.
+z &= \constr{c3} + \remainr{r}{rem:eq3}, \\
+y &= \constr{c2} + \remainr{r}{rem:eq2} - \namer{gamma}\,(\constr{c3} + \remainr{r}{rem:eq3}), \\
+x &= \constr{c1} + \remainr{r}{rem:eq1} - \namer{alpha}\,(\constr{c2} + \remainr{r}{rem:eq2}) + (\namer{alpha}\namer{gamma} - \namer{beta})(\constr{c3} + \remainr{r}{rem:eq3}).
 \end{align}
 
 \end{document}

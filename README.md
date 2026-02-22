@@ -41,6 +41,9 @@ Data is persisted in `jobname.xrf` between LaTeX runs.
 \\begin{document}
 $\\xrfItemL{axiom}{ax:first}$, then $\\xrfItem{axiom}$,
 and later $\\xrfItemR{axiom}{ax:first}$.
+
+Also with remainders:
+$\\remainl{r}{rem:first}$ and later $\\remainr{r}{rem:first}$.
 \\end{document}
 ```
 
@@ -94,3 +97,8 @@ l3build check
 3. Build CTAN archive: `l3build ctan`.
 4. Verify artifact exists: `build/distrib/ctan/xrf-ctan.zip`.
 5. Keep version fields aligned in `xrf.sty`, `build.lua`, `xrf-doc.tex`, and `CHANGELOG.md`.
+
+## TODO Before Deployment
+
+- Proofread the package documentation (`xrf-doc.tex` and rendered `xrf-doc.pdf`).
+- Check the example (`examples/basic.tex`) and verify the rendered output in `examples/basic.pdf`.

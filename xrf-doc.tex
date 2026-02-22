@@ -7,7 +7,7 @@
 
 \title{xrf package documentation}
 \author{Pionus GmbH\\\texttt{deckert@pionus-solutions.de}}
-\date{Version 1.0.1 (2026-02-19)}
+\date{Version 1.0.2 (2026-02-22)}
 
 \newcommand{\pkg}[1]{\textsf{#1}}
 \newcommand{\cs}[1]{\texttt{\textbackslash#1}}
@@ -193,33 +193,38 @@ Named constants:
 \namel{alpha}{\alpha}, \namel{beta}{\beta}, \namel{gamma}{\gamma}.
 RHS constants:
 \constl{c1}, \constl{c2}, \constl{c3}.
+Remainder terms:
+\remainl{r}{rem:eq1}, \remainl{r}{rem:eq2}, \remainl{r}{rem:eq3}.
 
 \begin{align}
 \terml{t:eq1}\quad x + \namer{alpha}y
-  + \namer{beta}z &= \constr{c1} \\
-\terml{t:eq2}\quad y + \namer{gamma}z &= \constr{c2} \\
-\terml{t:eq3}\quad z &= \constr{c3}
+  + \namer{beta}z &= \constr{c1} + \remainr{r}{rem:eq1} \\
+\terml{t:eq2}\quad y + \namer{gamma}z &= \constr{c2} + \remainr{r}{rem:eq2} \\
+\terml{t:eq3}\quad z &= \constr{c3} + \remainr{r}{rem:eq3}
 \end{align}
 
-From \termr{t:eq3}: z = \constr{c3}.
+From \termr{t:eq3}: z = \constr{c3} + \remainr{r}{rem:eq3}.
 From \termr{t:eq2}: y = \constr{c2}
-  - \namer{gamma}\constr{c3}.
+  + \remainr{r}{rem:eq2}
+  - \namer{gamma}(\constr{c3} + \remainr{r}{rem:eq3}).
 From \termr{t:eq1}: x = \constr{c1} - \namer{alpha}\constr{c2}
-  + (\namer{alpha}\namer{gamma} - \namer{beta})\constr{c3}.
+  + \remainr{r}{rem:eq1}
+  - \namer{alpha}\remainr{r}{rem:eq2}
+  + (\namer{alpha}\namer{gamma} - \namer{beta})(\constr{c3} + \remainr{r}{rem:eq3}).
 \end{document}
 \end{verbatim}
 
 Rendered output:
 \begin{align*}
-\terml{t:eq1-doc}\quad x + \namel{alpha-doc}{\alpha}y + \namel{beta-doc}{\beta}z &= \constl{c1-doc} \\
-\terml{t:eq2-doc}\quad y + \namel{gamma-doc}{\gamma}z &= \constl{c2-doc} \\
-\terml{t:eq3-doc}\quad z &= \constl{c3-doc}
+\terml{t:eq1-doc}\quad x + \namel{alpha-doc}{\alpha}y + \namel{beta-doc}{\beta}z &= \constl{c1-doc} + \remainl{r}{rem1-doc} \\
+\terml{t:eq2-doc}\quad y + \namel{gamma-doc}{\gamma}z &= \constl{c2-doc} + \remainl{r}{rem2-doc} \\
+\terml{t:eq3-doc}\quad z &= \constl{c3-doc} + \remainl{r}{rem3-doc}
 \end{align*}
 
 \begin{align*}
-z &= \constr{c3-doc} \\
-y &= \constr{c2-doc} - \namer{gamma-doc}\constr{c3-doc} \\
-x &= \constr{c1-doc} - \namer{alpha-doc}\constr{c2-doc} + (\namer{alpha-doc}\namer{gamma-doc} - \namer{beta-doc})\constr{c3-doc}
+z &= \constr{c3-doc} + \remainr{r}{rem3-doc} \\
+y &= \constr{c2-doc} + \remainr{r}{rem2-doc} - \namer{gamma-doc}(\constr{c3-doc} + \remainr{r}{rem3-doc}) \\
+x &= \constr{c1-doc} + \remainr{r}{rem1-doc} - \namer{alpha-doc}(\constr{c2-doc} + \remainr{r}{rem2-doc}) + (\namer{alpha-doc}\namer{gamma-doc} - \namer{beta-doc})(\constr{c3-doc} + \remainr{r}{rem3-doc})
 \end{align*}
 
 \section{Label Interface}

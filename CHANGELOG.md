@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2] - 2026-02-22
+
+- Expanded documentation examples to include `\\remainl` and `\\remainr` usage.
+- Updated `examples/basic.tex` to include remainder labels/references in the
+  system and derived expressions.
+- Cleaned equation formatting in `examples/basic.tex` to avoid chained equal
+  signs after term labels.
+
 ## [1.0.1] - 2026-02-19
 
 - Fixed label snapshot semantics so references keep the originally defined value

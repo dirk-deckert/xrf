@@ -8,7 +8,7 @@ checkengines = {"pdftex", "luatex", "xetex"}
 
 uploadconfig = {
   pkg = "xrf",
-  version = "1.0.1",
+  version = "1.0.2",
   author = "Pionus GmbH",
   license = "lppl1.3c",
   summary = "Cross-referencing named symbols and generalized sequential markers",
